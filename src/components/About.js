@@ -9,7 +9,7 @@ export default function About() {
   <div class="accordion-item" >
     <h2 class="accordion-header" >
       <button class="accordion-button" type="button" data-bs-toggle="collapse"  data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-        This is jsut a test project.
+        This is just a test project.
       </button>
     </h2>
     <div id="collapseOne" class="accordion-collapse collapse show"  data-bs-parent="#accordionExample">

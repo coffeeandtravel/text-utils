@@ -55,18 +55,18 @@ export default function TextForm(props) {
       <div className="mb-3">
         <textarea className={props.mode === 'light'?'form-control bg-white text-dark':'form-control bg-dark text-light'} id="forText" onChange={handleOnChange}  rows="8" value={text}></textarea>
         <div className="">
-        <button className={`mt-3 btn btn-${props.buttonColor}`} onClick={handleUpClick}>Uppercase</button>
-        <button className={`mt-3 btn btn-${props.buttonColor} mx-1`} onClick={handleLowClick}>Lowercase</button>
-        <button className={`mt-3 btn btn-${props.buttonColor}`} onClick={clearClick}>Clear</button>
-        <button className={`mt-3 btn btn-${props.buttonColor} mx-1`} onClick={genClick}>Generate</button>
-        <button className={`mt-3 btn btn-${props.buttonColor}`} onClick={copyClick}>Copy</button>
-        <button className={`mt-3 btn btn-${props.buttonColor} mx-1`} onClick={extraClick}>Remove Extra Spaces</button>
+        <button className={`mt-3 btn btn-${props.buttonColor} my-1`} onClick={handleUpClick}>Uppercase</button>
+        <button className={`mt-3 btn btn-${props.buttonColor} mx-1 my-1`} onClick={handleLowClick}>Lowercase</button>
+        <button className={`mt-3 btn btn-${props.buttonColor} my-1`} onClick={clearClick}>Clear</button>
+        <button className={`mt-3 btn btn-${props.buttonColor} mx-1 my-1`} onClick={genClick}>Generate</button>
+        <button className={`mt-3 btn btn-${props.buttonColor} my-1`} onClick={copyClick}>Copy</button>
+        <button className={`mt-3 btn btn-${props.buttonColor} mx-1 my-1`} onClick={extraClick}>Remove Extra Spaces</button>
         </div>
       </div>
     </div>
     <div className="container">
         <h2>Text Summary</h2>
-        <h6>{text.split(" ").length} Words and {text.length} Characters</h6>
+        <h6>{text.split(" ").filter((element)=>element.length!==0).length} Words and {text.length} Characters</h6>
         <h6> Average time taken to read this paraghraph. {0.008 * text.split(" ").length} mins.</h6>
         <h2>Preview</h2>
         <p>{text.length>0?text:"Enter something to preview here"}</p>

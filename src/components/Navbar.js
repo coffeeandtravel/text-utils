@@ -2,19 +2,19 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
-
 export default function Navbar(props) {
   const handleDropdownClick = (color) => {
-    if (props.onColorChange) {  // Check if the function exists
+    if (props.onColorChange) {
       props.onColorChange(color); // Call onColorChange passed via props
     }
   };
+
   return (
     <nav
       className={`navbar navbar-expand-lg navbar-${props.mode} bg-${props.mode}`}
-        data-bs-theme={props.mode==="light"?"light":"dark"}
+      data-bs-theme={props.mode === "light" ? "light" : "dark"} // Toggle theme dynamically
     >
-      <div className="container-fluid" >
+      <div className="container-fluid">
         <Link className="navbar-brand" to="/">
           {props.title}
         </Link>
@@ -22,7 +22,7 @@ export default function Navbar(props) {
           className="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
-          data-bs-target="#navbarS"
+          data-bs-target="#navbarNav" // Fixed id reference
           aria-controls="navbarNav"
           aria-expanded="false"
           aria-label="Toggle navigation"
@@ -41,11 +41,10 @@ export default function Navbar(props) {
                 {props.aboutText}
               </Link>
             </li>
-            <ul className="navbar-nav">
             <li className="nav-item dropdown">
               <Link
                 className="nav-link dropdown-toggle"
-                to="/"
+                to="#"
                 role="button"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
@@ -53,17 +52,43 @@ export default function Navbar(props) {
                 Select Theme
               </Link>
               <ul className="dropdown-menu">
-                <li > <button className="btn" onClick={() => handleDropdownClick("primary")}>Blue</button></li>
-                <li > <button className="btn" onClick={() => handleDropdownClick("success")}>Green</button></li>
-                <li > <button className="btn" onClick={() => handleDropdownClick("danger")}>Red</button></li>
-                <li > <button className="btn" onClick={() => handleDropdownClick("warning")}>Yellow</button></li>
+                <li>
+                  <button
+                    className="dropdown-item"
+                    onClick={() => handleDropdownClick("primary")}
+                  >
+                    Blue
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="dropdown-item"
+                    onClick={() => handleDropdownClick("success")}
+                  >
+                    Green
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="dropdown-item"
+                    onClick={() => handleDropdownClick("danger")}
+                  >
+                    Red
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="dropdown-item"
+                    onClick={() => handleDropdownClick("warning")}
+                  >
+                    Yellow
+                  </button>
+                </li>
               </ul>
             </li>
           </ul>
-          </ul>
 
           <div className="form-check form-switch ms-auto">
-            
             <input
               className={`form-check-input text-${
                 props.mode === "light" ? "dark" : "light"
@@ -82,7 +107,6 @@ export default function Navbar(props) {
               {props.mode === "light" ? "Light Mode" : "Dark Mode"}
             </label>
           </div>
-          
         </div>
       </div>
     </nav>
@@ -92,8 +116,13 @@ export default function Navbar(props) {
 Navbar.propTypes = {
   title: PropTypes.string.isRequired,
   aboutText: PropTypes.string.isRequired,
+  mode: PropTypes.string.isRequired,
+  toggleMode: PropTypes.func.isRequired,
+  onColorChange: PropTypes.func,
 };
-Navbar.defautProps = {
+
+Navbar.defaultProps = {
   title: "Name of the website",
   aboutText: "About",
+  mode: "light", // Default to light mode if not provided
 };
