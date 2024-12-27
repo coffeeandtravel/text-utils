@@ -46,7 +46,7 @@ function App() {
           toggleMode={toggleMode}
           onColorChange={handleColorChange}
         />
-        <Alert alert={alert} />
+        <Alert alert={alert} mode={mode}/>
 
         <div className="container my-3">
           <Routes>
