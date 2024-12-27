@@ -38,16 +38,6 @@ function App() {
 
   return (
     <>
-      {/* <Navbar
-        title="TextThings"
-        aboutText="About"
-        mode={mode}
-        toggleMode={toggleMode}
-        onColorChange={handleColorChange}
-      /> */}
-      {/* <Alert alert={alert} showAlert={showAlert} /> */}
-      {/* <TextForm heading="Enter the text to analyse." mode={mode} showAlert={showAlert} buttonColor={buttonColor} /> */}
-      {/* <About /> */}
       <Router>
         <Navbar
           title="TextThings"
@@ -60,7 +50,7 @@ function App() {
 
         <div className="container my-3">
           <Routes>
-            <Route exact path="/about" element={<About />}></Route>
+            <Route exact path="/about" element={<About mode={mode} />}></Route>
 
             <Route
               exact

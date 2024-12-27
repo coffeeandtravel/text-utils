@@ -1,9 +1,9 @@
 // import React, {useState} from 'react'
 
-export default function About() {
+export default function About(props) {
     
   return (
-    <div className="container my-3 " data-bs-theme="dark">
+    <div className="container my-3 " data-bs-theme={props.mode === "light" ? "light" : "dark"}>
         <h1 className="mb-3">About</h1>
         <div class="accordion" id="accordionExample" >
   <div class="accordion-item" >
