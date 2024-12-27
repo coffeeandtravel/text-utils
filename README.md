@@ -1,146 +1,138 @@
 # Hosting a React Web Application on AWS EC2
 
-This guide walks through the steps required to host a React web application on an AWS EC2 instance. It includes setting up the instance, deploying the application, managing processes, and assigning an Elastic IP.
-
-## Prerequisites
-1. AWS account.
-2. React application ready for deployment.
-3. Basic knowledge of Linux commands (`ls`, `mkdir`, etc.).
-4. An SSH client (e.g., terminal on macOS/Linux, PuTTY on Windows).
+This guide covers all necessary steps to host a React web application on AWS EC2, from creating an instance to making your application accessible via an Elastic IP.
 
 ---
 
-## Step 1: Launching an EC2 Instance
+## Steps to Host Your React App
+
+### 1. Launch an EC2 Instance
 1. Go to the AWS Management Console.
-2. Navigate to **EC2** > **Instances** > **Launch Instances**.
-3. Configure your instance:
-   - Select an Ubuntu AMI (Amazon Machine Image).
-   - Choose a t2.micro instance (Free Tier eligible).
-4. Create or select a key pair:
-   - Name your key pair (e.g., `ReactKey`).
-   - Download the `.pem` file and keep it secure.
-5. Configure security groups:
-   - Allow inbound traffic on port **3000** (for your React app).
-   - Allow SSH access (port **22**).
-6. Launch the instance.
+2. Navigate to **EC2 > Instances**.
+3. Click on **Launch Instance** and configure the following:
+   - **Choose an Amazon Machine Image (AMI)**: Select Ubuntu 22.04 or similar.
+   - **Instance Type**: Select `t2.micro` (free tier eligible).
+   - **Key Pair**: Create or select an existing key pair.
+   - **Security Group**: Allow SSH (port 22).
+4. Launch the instance and download the `.pem` key file.
 
 ---
 
-## Step 2: Connect to Your Instance via SSH
-1. Open your terminal and navigate to the directory containing the `.pem` file.
-2. Connect using the following command:
-   ```bash
-   ssh -i "ReactKey.pem" ubuntu@<Public_IP_or_DNS>
-   ```
-3. Replace `<Public_IP_or_DNS>` with your instance's public IP or DNS.
+### 2. Connect to Your Instance
+Use SSH to connect to your instance:
+```bash
+ssh -i "ReactKey.pem" ubuntu@<your-ec2-public-ip>
+```
+Replace `<your-ec2-public-ip>` with the public IP of your instance.
 
 ---
 
-## Step 3: Install Required Software
-1. Update the package list:
+### 3. Clone Your React App
+1. Install Git:
    ```bash
    sudo apt update
+   sudo apt install git -y
    ```
-2. Install Node.js and npm:
+2. Clone your repository:
+   ```bash
+   git clone <your-repo-url>
+   ```
+3. Navigate to the project folder:
+   ```bash
+   cd <your-project-folder>
+   ```
+
+---
+
+### 4. Install Dependencies
+1. Install Node.js and npm:
    ```bash
    sudo apt install nodejs npm -y
    ```
-3. Verify installation:
-   ```bash
-   node -v
-   npm -v
-   ```
-
----
-
-## Step 4: Clone Your React App Repository
-1. Navigate to your home directory:
-   ```bash
-   cd ~
-   ```
-2. Clone the repository:
-   ```bash
-   git clone <repository_url>
-   ```
-3. Navigate into the project folder:
-   ```bash
-   cd <project_directory>
-   ```
-4. Install dependencies:
+2. Install project dependencies:
    ```bash
    npm install
    ```
-5. Start the React development server:
+
+---
+
+### 5. Build and Serve Your React App
+1. Create a production build:
    ```bash
-   npm start
+   npm run build
+   ```
+2. Install the `serve` package globally:
+   ```bash
+   sudo npm install -g serve
+   ```
+3. Serve the build folder on a specific port (e.g., 8080):
+   ```bash
+   serve -s build -l 8080
    ```
 
 ---
 
-## Step 5: Assign an Elastic IP
-1. Go to the AWS Management Console > **EC2** > **Elastic IPs**.
-2. Allocate a new Elastic IP.
-3. Associate the Elastic IP with your instance:
-   - Select your instance ID.
-   - Confirm the association.
+### 6. Add Ports to Security Group
+By default, AWS EC2 blocks traffic to most ports. To make your app accessible:
 
-Your React app should now be accessible via the Elastic IP.
+1. Go to the **AWS Management Console**.
+2. Navigate to **EC2 > Security Groups**.
+3. Select the Security Group attached to your EC2 instance.
+4. Edit the **Inbound rules**:
+   - Add a new rule:
+     - **Type**: Custom TCP Rule
+     - **Protocol**: TCP
+     - **Port Range**: 8080 (or your chosen port)
+     - **Source**: Anywhere (0.0.0.0/0) or your specific IP range
+5. Save the rule.
 
 ---
 
-## Step 6: Check and Manage Running Processes
-1. List running processes on port 3000:
+### 7. Assign an Elastic IP (Optional)
+1. Navigate to **EC2 > Elastic IPs**.
+2. Allocate a new Elastic IP address.
+3. Associate it with your instance.
+4. Use the Elastic IP to access your app instead of the dynamic public IP.
+
+---
+
+### 8. Using Fine-Grained Personal Access Tokens
+If you cannot add your GitHub account to your EC2 instance directly, use fine-grained personal access tokens:
+
+1. Generate a fine-grained token on GitHub:
+   - Go to **Settings > Developer Settings > Personal Access Tokens > Fine-Grained Tokens**.
+   - Click **Generate new token** and select your repository's permissions (e.g., read and write access).
+   - Copy the generated token (it will only be shown once).
+2. Use the token to clone the repository:
    ```bash
-   sudo lsof -i :3000
+   git clone https://<your-username>@github.com/<your-repo>.git
    ```
-2. Kill the process if needed:
+   When prompted for a password, use the token instead.
+
+---
+
+### 9. Access Your React App
+Once your app is running and the security group is configured, open the following URL in your browser:
+```
+http://<elastic-ip>:8080/
+```
+Replace `<elastic-ip>` with your Elastic IP address.
+
+---
+
+### 10. Monitor and Manage Processes
+1. Check running processes:
    ```bash
-   kill <PID>
+   ps aux | grep npm
    ```
-   Replace `<PID>` with the process ID from the `lsof` output.
-
----
-
-## Step 7: Enable HTTPS (Optional)
-1. Install Certbot:
+2. Stop a process by its PID:
    ```bash
-   sudo apt install certbot
+   kill -9 <pid>
    ```
-2. Generate a self-signed certificate or use a custom domain with Certbot for Let's Encrypt.
 
 ---
 
-## Additional Tips
-- **Deploying a Production Build:**
-  - Build your React app:
-    ```bash
-    npm run build
-    ```
-  - Serve the static files using a web server like `nginx`.
-
-- **Saving Environment Variables:**
-  - Create a `.env` file in your project directory.
-  - Add environment-specific variables (e.g., API URLs, SSL cert paths).
-
-- **Securing Your Instance:**
-  - Regularly update your instance:
-    ```bash
-    sudo apt update && sudo apt upgrade -y
-    ```
-  - Close unused ports in your security group.
-
----
-
-## Troubleshooting
-1. **Instance Unreachable:**
-   - Ensure your security group allows inbound traffic on the required ports.
-2. **React App Not Running:**
-   - Check for errors in your application.
-   - Verify running processes using `sudo lsof -i :3000`.
-3. **Elastic IP Not Accessible:**
-   - Check if the instance is running.
-   - Ensure the Elastic IP is associated with the instance.
-
----
-
-By following this guide, you should be able to confidently host React web applications on AWS EC2 and manage them effectively.
+### 11. Additional Notes
+- Ensure you keep your `.pem` key secure.
+- Use environment variables to manage sensitive data.
+- Regularly update your instance and dependencies for security.
