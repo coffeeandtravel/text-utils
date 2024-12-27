@@ -1,70 +1,146 @@
-# Getting Started with Create React App
+# Hosting a React Web Application on AWS EC2
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This guide walks through the steps required to host a React web application on an AWS EC2 instance. It includes setting up the instance, deploying the application, managing processes, and assigning an Elastic IP.
 
-## Available Scripts
+## Prerequisites
+1. AWS account.
+2. React application ready for deployment.
+3. Basic knowledge of Linux commands (`ls`, `mkdir`, etc.).
+4. An SSH client (e.g., terminal on macOS/Linux, PuTTY on Windows).
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## Step 1: Launching an EC2 Instance
+1. Go to the AWS Management Console.
+2. Navigate to **EC2** > **Instances** > **Launch Instances**.
+3. Configure your instance:
+   - Select an Ubuntu AMI (Amazon Machine Image).
+   - Choose a t2.micro instance (Free Tier eligible).
+4. Create or select a key pair:
+   - Name your key pair (e.g., `ReactKey`).
+   - Download the `.pem` file and keep it secure.
+5. Configure security groups:
+   - Allow inbound traffic on port **3000** (for your React app).
+   - Allow SSH access (port **22**).
+6. Launch the instance.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Step 2: Connect to Your Instance via SSH
+1. Open your terminal and navigate to the directory containing the `.pem` file.
+2. Connect using the following command:
+   ```bash
+   ssh -i "ReactKey.pem" ubuntu@<Public_IP_or_DNS>
+   ```
+3. Replace `<Public_IP_or_DNS>` with your instance's public IP or DNS.
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Step 3: Install Required Software
+1. Update the package list:
+   ```bash
+   sudo apt update
+   ```
+2. Install Node.js and npm:
+   ```bash
+   sudo apt install nodejs npm -y
+   ```
+3. Verify installation:
+   ```bash
+   node -v
+   npm -v
+   ```
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Step 4: Clone Your React App Repository
+1. Navigate to your home directory:
+   ```bash
+   cd ~
+   ```
+2. Clone the repository:
+   ```bash
+   git clone <repository_url>
+   ```
+3. Navigate into the project folder:
+   ```bash
+   cd <project_directory>
+   ```
+4. Install dependencies:
+   ```bash
+   npm install
+   ```
+5. Start the React development server:
+   ```bash
+   npm start
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Step 5: Assign an Elastic IP
+1. Go to the AWS Management Console > **EC2** > **Elastic IPs**.
+2. Allocate a new Elastic IP.
+3. Associate the Elastic IP with your instance:
+   - Select your instance ID.
+   - Confirm the association.
 
-### `npm run eject`
+Your React app should now be accessible via the Elastic IP.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Step 6: Check and Manage Running Processes
+1. List running processes on port 3000:
+   ```bash
+   sudo lsof -i :3000
+   ```
+2. Kill the process if needed:
+   ```bash
+   kill <PID>
+   ```
+   Replace `<PID>` with the process ID from the `lsof` output.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Step 7: Enable HTTPS (Optional)
+1. Install Certbot:
+   ```bash
+   sudo apt install certbot
+   ```
+2. Generate a self-signed certificate or use a custom domain with Certbot for Let's Encrypt.
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Additional Tips
+- **Deploying a Production Build:**
+  - Build your React app:
+    ```bash
+    npm run build
+    ```
+  - Serve the static files using a web server like `nginx`.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- **Saving Environment Variables:**
+  - Create a `.env` file in your project directory.
+  - Add environment-specific variables (e.g., API URLs, SSL cert paths).
 
-### Code Splitting
+- **Securing Your Instance:**
+  - Regularly update your instance:
+    ```bash
+    sudo apt update && sudo apt upgrade -y
+    ```
+  - Close unused ports in your security group.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
+## Troubleshooting
+1. **Instance Unreachable:**
+   - Ensure your security group allows inbound traffic on the required ports.
+2. **React App Not Running:**
+   - Check for errors in your application.
+   - Verify running processes using `sudo lsof -i :3000`.
+3. **Elastic IP Not Accessible:**
+   - Check if the instance is running.
+   - Ensure the Elastic IP is associated with the instance.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+By following this guide, you should be able to confidently host React web applications on AWS EC2 and manage them effectively.
